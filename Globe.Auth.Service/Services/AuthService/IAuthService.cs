@@ -1,0 +1,7 @@
+﻿namespace Globe.Auth.Service.Services.AuthService
+{
+    public interface IAuthService
+    {
+        Task<string> LoginAsync(string username, string password);
+    }
+}
