@@ -1,5 +1,6 @@
 ﻿using Globe.Auth.Api.Extensions;
 using Globe.Auth.Service.Services.AuthService;
+using Globe.Auth.Service.Services.UserService.Impl;
 using Globe.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +15,8 @@ namespace Globe.Auth.Api.Controllers
 
         public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
-            _authService = authService;
             _logger = logger;
+            _authService = authService;
         }
 
         [HttpPost("Login")]

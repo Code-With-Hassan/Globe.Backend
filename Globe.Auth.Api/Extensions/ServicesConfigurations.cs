@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Globe.Auth.Service.Services.UserService;
+using Globe.Auth.Service.Services.UserService.Impl;
 
 namespace Globe.Auth.Api.Extensions
 {
@@ -67,8 +69,9 @@ namespace Globe.Auth.Api.Extensions
         {
             // Registers the authentication service with a scoped lifetime.
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IUserRegistrationService, UserRegistrationService>();
             services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 
             services.AddLogging();
         }
