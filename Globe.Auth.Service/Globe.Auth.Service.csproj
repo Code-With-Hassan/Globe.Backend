@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Global.Shared\Globe.Shared.csproj" />
     <ProjectReference Include="..\Globe.Shared.Entities\Globe.Shared.Entities.csproj" />
+    <ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
   </ItemGroup>
 
 </Project>

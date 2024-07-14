@@ -1,7 +1,9 @@
-﻿namespace Globe.Auth.Service.Services.AuthService
+﻿using Globe.Shared.Models.ResponseDTOs;
+
+namespace Globe.Auth.Service.Services.AuthService
 {
     public interface IAuthService
     {
-        Task<string> LoginAsync(string username, string password);
+        Task<LoginDTO> LoginAsync(string username, string password);
     }
 }

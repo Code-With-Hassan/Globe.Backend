@@ -1,5 +1,4 @@
-﻿
-namespace Global.Shared.Constants
+﻿namespace Globe.Shared.Constants
 {
     public class JWTSettingsContants
     {

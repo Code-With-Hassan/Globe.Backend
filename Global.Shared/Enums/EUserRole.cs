@@ -1,4 +1,4 @@
-﻿namespace Global.Shared.Enums
+﻿namespace Globe.Shared.Enums
 {
     public enum EUserRole
     {

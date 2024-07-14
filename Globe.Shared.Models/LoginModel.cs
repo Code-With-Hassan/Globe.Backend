@@ -6,5 +6,7 @@
         public string Password { get; set; }
         public bool IsRemember { get; set; } = false;
 
+        public string ReturnUrl { get; set; }
+
     }
 }

@@ -1,7 +1,7 @@
-﻿using Global.Shared.Enums;
-using Globe.Auth.Service.Data;
+﻿using Globe.Auth.Service.Data;
 using Globe.Auth.Service.Services.RoleService;
 using Globe.Shared.Entities;
+using Globe.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

@@ -1,4 +1,4 @@
-﻿using Global.Shared.Constants;
+﻿using Globe.Shared.Constants;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;

@@ -10,21 +10,31 @@ namespace Globe.Auth.Api.Controllers
     public class AuthController : BaseController
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var token = await _authService.LoginAsync(model.Username, model.Password);
-            if (token != null)
+            try
             {
-                return Ok<string>(token);
+                var userResponse = await _authService.LoginAsync(model.Username, model.Password);
+                if (userResponse != null)
+                {
+                    return Ok(userResponse);
+                }
+                return Unauthorized();
             }
-            return Unauthorized();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

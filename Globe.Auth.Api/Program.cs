@@ -42,7 +42,7 @@ namespace Globe.Auth.Api
             app.UseAuthorization();
             app.UseAuthorization();
 
-            app.UseMiddleware<CustomAuthMiddleware>();
+            //app.UseMiddleware<CustomAuthMiddleware>();
 
             app.MapControllers();
 
