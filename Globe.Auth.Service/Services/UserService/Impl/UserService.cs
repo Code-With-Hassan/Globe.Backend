@@ -24,6 +24,8 @@ namespace Globe.Auth.Service.Services.UserService.Impl
                 {
                     ApplicationUsers = await _dbContext.ApplicationUser
                                                                     .OrderByDescending(x => x.CreateOn)
+                                                                    .Include(x => x.User)
+                                                                    .Include(x => x.UserOrganizations)
                                                                     .ToListAsync()
                 };
                 return usersListResponse;
