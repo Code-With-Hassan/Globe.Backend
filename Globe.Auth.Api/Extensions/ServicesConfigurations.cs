@@ -3,8 +3,6 @@ using Globe.Auth.Service.Services.AuthService;
 using Globe.Auth.Service.Services.AuthService.Impl;
 using Globe.Auth.Service.Services.RoleService.Impl;
 using Globe.Auth.Service.Services.RoleService;
-using Globe.Auth.Service.Services.UserRegistrationService.Impl;
-using Globe.Auth.Service.Services.UserRegistrationService;
 using Globe.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -14,6 +12,8 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using Globe.Auth.Service.Services.UserService;
 using Globe.Auth.Service.Services.UserService.Impl;
+using Globe.Auth.Service.Services.UserRegistrationService;
+using Globe.Auth.Service.Services.UserRegistrationService.Impl;
 
 namespace Globe.Auth.Api.Extensions
 {

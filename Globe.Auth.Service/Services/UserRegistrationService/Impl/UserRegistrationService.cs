@@ -1,5 +1,6 @@
 ﻿using Globe.Auth.Service.Data;
 using Globe.Auth.Service.Services.RoleService;
+using Globe.Auth.Service.Services.UserRegistrationService;
 using Globe.Shared.Entities;
 using Globe.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
@@ -44,7 +45,7 @@ namespace Globe.Auth.Service.Services.UserRegistrationService.Impl
         /// <returns>True if registration succeeded, otherwise false.</returns>
         public async Task<bool> RegisterUserAsync(string username, string email, string password)
         {
-            return await this.RegisterAsync(username, email, password, EUserRole.User.ToString());
+            return await RegisterAsync(username, email, password, EUserRole.User.ToString());
         }
 
         /// <summary>
@@ -56,7 +57,7 @@ namespace Globe.Auth.Service.Services.UserRegistrationService.Impl
         /// <returns>True if registration succeeded, otherwise false.</returns>
         public async Task<bool> RegisterAdminAsync(string username, string email, string password)
         {
-            return await this.RegisterAsync(username, email, password, EUserRole.Admin.ToString());
+            return await RegisterAsync(username, email, password, EUserRole.Admin.ToString());
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Globe.Auth.Service.Services.UserRegistrationService.Impl
         /// <returns>True if registration succeeded, otherwise false.</returns>
         public async Task<bool> RegisterSuperAdminAsync(string username, string email, string password)
         {
-            return await this.RegisterAsync(username, email, password, EUserRole.SuperAdmin.ToString());
+            return await RegisterAsync(username, email, password, EUserRole.SuperAdmin.ToString());
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Globe.Auth.Service.Services.UserRegistrationService.Impl
         /// <returns>True if registration succeeded, otherwise false.</returns>
         public async Task<bool> RegisterUnverifiedUserAsync(string username, string email, string password)
         {
-            return await this.RegisterAsync(username, email, password, EUserRole.UnverifiedUser.ToString());
+            return await RegisterAsync(username, email, password, EUserRole.UnverifiedUser.ToString());
         }
 
         /// <summary>
