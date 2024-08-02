@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Globe.Auth.Api.Extensions;
-using Globe.Auth.Service.Services.UserService;
+using Globe.Account.Service.Services.UserService;
+using Globe.Account.Api.Extensions;
 
-namespace Globe.Auth.Api.Controllers
+namespace Globe.Account.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

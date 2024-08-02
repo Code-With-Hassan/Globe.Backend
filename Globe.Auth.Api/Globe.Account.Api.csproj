@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Global.Shared\Globe.Shared.csproj" />
-    <ProjectReference Include="..\Globe.Auth.Service\Globe.Auth.Service.csproj" />
+    <ProjectReference Include="..\Globe.Auth.Service\Globe.Account.Service.csproj" />
     <ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
   </ItemGroup>
 

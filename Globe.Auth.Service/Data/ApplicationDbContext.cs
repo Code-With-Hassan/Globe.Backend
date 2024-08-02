@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Globe.Auth.Service.Data
+namespace Globe.Account.Service.Data
 {
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {

@@ -1,4 +1,4 @@
-﻿namespace Globe.Auth.Api.Models
+﻿namespace Globe.Account.Api.Models
 {
     public class ApiResponse<T>
     {

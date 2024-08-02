@@ -1,9 +1,10 @@
-﻿using Globe.Auth.Service.Data;
+﻿using Globe.Account.Service.Data;
+using Globe.Account.Service.Services.UserService;
 using Globe.Shared.Models.ResponseDTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Globe.Auth.Service.Services.UserService.Impl
+namespace Globe.Account.Service.Services.UserService.Impl
 {
     public class UserService : IUserService
     {

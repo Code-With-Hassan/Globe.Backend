@@ -1,4 +1,4 @@
-﻿namespace Globe.Auth.Service.Services.UserRegistrationService
+﻿namespace Globe.Account.Service.Services.UserRegistrationService
 {
     /// <summary>
     /// 

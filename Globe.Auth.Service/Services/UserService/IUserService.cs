@@ -1,6 +1,6 @@
 ﻿using Globe.Shared.Models.ResponseDTOs;
 
-namespace Globe.Auth.Service.Services.UserService
+namespace Globe.Account.Service.Services.UserService
 {
     public interface IUserService
     {

@@ -1,11 +1,11 @@
-﻿using Globe.Auth.Api.Extensions;
-using Globe.Auth.Service.Services.AuthService;
+﻿using Globe.Account.Api.Extensions;
+using Globe.Account.Service.Services.AuthService;
 using Globe.Shared.Models;
 using Globe.Shared.MVC.Resoures;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Globe.Auth.Api.Controllers
+namespace Globe.Account.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
@@ -43,7 +43,7 @@ namespace Globe.Auth.Api.Controllers
                 }
 
                 var userResponse = await _authService.LoginAsync(model.Username, model.Password);
-                
+
                 if (userResponse != null)
                 {
                     _logger.LogInformation("User logged in: {UserId} => {UserName}",

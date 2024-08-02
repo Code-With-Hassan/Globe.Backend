@@ -1,7 +1,7 @@
 ﻿using Globe.Auth.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Globe.Auth.Api.Extensions
+namespace Globe.Account.Api.Extensions
 {
     public abstract class BaseController : ControllerBase
     {

@@ -1,12 +1,12 @@
-﻿using Globe.Auth.Service.Data;
-using Globe.Auth.Service.Services.RoleService;
-using Globe.Auth.Service.Services.UserRegistrationService;
+﻿using Globe.Account.Service.Data;
+using Globe.Account.Service.Services.RoleService;
+using Globe.Account.Service.Services.UserRegistrationService;
 using Globe.Shared.Entities;
 using Globe.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace Globe.Auth.Service.Services.UserRegistrationService.Impl
+namespace Globe.Account.Service.Services.UserRegistrationService.Impl
 {
     /// <summary>
     /// Service for user registration.

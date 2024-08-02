@@ -1,9 +1,9 @@
-﻿using Globe.Auth.Api.Extensions;
-using Globe.Auth.Service.Services.UserRegistrationService;
+﻿using Globe.Account.Api.Extensions;
+using Globe.Account.Service.Services.UserRegistrationService;
 using Globe.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Globe.Auth.Api.Controllers
+namespace Globe.Account.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -23,9 +23,9 @@ namespace Globe.Auth.Api.Controllers
 
             if (result)
             {
-                return Ok<bool>(true);
+                return Ok(true);
             }
-            return BadRequest<bool>(false, "Registration failed");
+            return BadRequest(false, "Registration failed");
         }
     }
 }

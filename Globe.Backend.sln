@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34408.163
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Globe.Auth.Api", "Globe.Auth.Api\Globe.Auth.Api.csproj", "{B21F6AA7-AB5D-46B6-AF05-5AD20F7586D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Globe.Account.Api", "Globe.Auth.Api\Globe.Account.Api.csproj", "{B21F6AA7-AB5D-46B6-AF05-5AD20F7586D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Account", "Account", "{16C2215C-ADE2-47F3-B9B5-BD520F0FEC20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Globe.Auth.Service", "Globe.Auth.Service\Globe.Auth.Service.csproj", "{7792C3C7-1CB0-4478-8857-CD98E24F2060}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Globe.Account.Service", "Globe.Auth.Service\Globe.Account.Service.csproj", "{7792C3C7-1CB0-4478-8857-CD98E24F2060}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{55410D49-6A34-4DAF-9788-D0439B14E90D}"
 EndProject

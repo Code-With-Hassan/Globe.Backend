@@ -1,4 +1,5 @@
-﻿using Globe.Auth.Service.Data;
+﻿using Globe.Account.Service.Data;
+using Globe.Account.Service.Services.AuthService;
 using Globe.Shared.Models.ResponseDTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Globe.Auth.Service.Services.AuthService.Impl
+namespace Globe.Account.Service.Services.AuthService.Impl
 {
     public class AuthService : IAuthService
     {

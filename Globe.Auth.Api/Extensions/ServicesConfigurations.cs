@@ -1,21 +1,21 @@
-﻿using Globe.Auth.Service.Data;
-using Globe.Auth.Service.Services.AuthService;
-using Globe.Auth.Service.Services.AuthService.Impl;
-using Globe.Auth.Service.Services.RoleService.Impl;
-using Globe.Auth.Service.Services.RoleService;
-using Globe.Shared.Entities;
+﻿using Globe.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Globe.Auth.Service.Services.UserService;
-using Globe.Auth.Service.Services.UserService.Impl;
-using Globe.Auth.Service.Services.UserRegistrationService;
-using Globe.Auth.Service.Services.UserRegistrationService.Impl;
+using Globe.Account.Service.Services.RoleService;
+using Globe.Account.Service.Services.UserRegistrationService;
+using Globe.Account.Service.Services.UserService;
+using Globe.Account.Service.Services.AuthService;
+using Globe.Account.Service.Services.UserService.Impl;
+using Globe.Account.Service.Services.AuthService.Impl;
+using Globe.Account.Service.Services.UserRegistrationService.Impl;
+using Globe.Account.Service.Services.RoleService.Impl;
+using Globe.Account.Service.Data;
 
-namespace Globe.Auth.Api.Extensions
+namespace Globe.Account.Api.Extensions
 {
     /// <summary>
     /// Static class containing extension methods for configuring services.

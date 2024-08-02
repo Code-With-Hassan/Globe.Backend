@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace Globe.Auth.Api.Middlewares
+namespace Globe.Account.Api.Middlewares
 {
     public class CustomAuthMiddleware
     {

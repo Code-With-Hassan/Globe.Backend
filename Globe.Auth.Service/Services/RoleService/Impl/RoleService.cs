@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Globe.Account.Service.Services.RoleService;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
-namespace Globe.Auth.Service.Services.RoleService.Impl
+namespace Globe.Account.Service.Services.RoleService.Impl
 {
     public class RoleService : IRoleService
     {
@@ -15,7 +16,7 @@ namespace Globe.Auth.Service.Services.RoleService.Impl
         /// <param name="userManager">User manager.</param>
         /// <param name="roleManager">Role manager.</param>
         /// <param name="logger">Logger service.</param>
-        public RoleService(ILogger<RoleService> logger, 
+        public RoleService(ILogger<RoleService> logger,
                             UserManager<IdentityUser> userManager,
                             RoleManager<IdentityRole> roleManager)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Globe.Auth.Service.Services.RoleService
+namespace Globe.Account.Service.Services.RoleService
 {
     public interface IRoleService
     {

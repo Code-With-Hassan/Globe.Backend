@@ -1,8 +1,8 @@
-using Globe.Auth.Api.Extensions;
+using Globe.Account.Api.Extensions;
 using Globe.Auth.Api.Middlewares;
 using Serilog;
 
-namespace Globe.Auth.Api
+namespace Globe.Account.Api
 {
     public class Program
     {
