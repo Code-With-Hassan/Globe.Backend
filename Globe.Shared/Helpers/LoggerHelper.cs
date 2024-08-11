@@ -1,6 +1,5 @@
 ﻿using Globe.Shared.Constants;
 using Globe.Shared.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
