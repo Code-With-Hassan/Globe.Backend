@@ -1,6 +1,8 @@
 ﻿using Globe.Account.Api.Extensions;
 using Globe.Account.Service.Services.UserRegistrationService;
 using Globe.Shared.Models;
+using Globe.Shared.MVC.Resoures;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Globe.Account.Api.Controllers
@@ -9,23 +11,52 @@ namespace Globe.Account.Api.Controllers
     [ApiController]
     public class AccountController : BaseController
     {
+        private readonly ILogger<AccountController> _logger;
         private readonly IUserRegistrationService _userRegistrationService;
 
-        public AccountController(IUserRegistrationService userRegistrationService)
+        public AccountController(ILogger<AccountController> logger, 
+                                    IUserRegistrationService userRegistrationService)
         {
+            _logger = logger;
             _userRegistrationService = userRegistrationService;
         }
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            var result = await _userRegistrationService.RegisterUserAsync(model.Username, model.Email, model.Password);
-
-            if (result)
+            try
             {
-                return Ok(true);
+                // Checking if the passed Model is valid
+                if (!ModelState.IsValid || model == null)
+                    return BadRequest(new { Message = MsgKeys.InvalidInputParameters });
+
+                var result = await _userRegistrationService.RegisterUserAsync(model.Username, model.Email, model.Password);
+
+                if (result.Error != null)
+                    return BadRequest(new { Message = MsgKeys.UserRegistrationFailed, Errors = _userRegistrationService.GetErrorMessageDictionary(result.Error.Message) });
+
+                // If registration failed
+                if (!result.IdentityResult.Succeeded)
+                {
+                    var dictionary = new Dictionary<string, string>();
+
+                    // Collect all errors in a dictionary
+                    foreach (IdentityError error in result.IdentityResult.Errors)
+                    {
+                        dictionary[error.Code] = error.Description;
+                    }
+
+                    // Passing the errors dictionary to the json response
+                    return BadRequest(new { Message = MsgKeys.UserRegistrationFailed, Errors = dictionary });
+                }
+
+                return Ok(result.User);
             }
-            return BadRequest(false, "Registration failed");
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest(new { Message = MsgKeys.SomeThingWentWrong });
+            }
         }
     }
 }

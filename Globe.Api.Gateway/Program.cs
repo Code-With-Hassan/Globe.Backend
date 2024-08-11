@@ -108,12 +108,6 @@ namespace Globe.Api.Gateway
                    Console.WriteLine("Configuring Kestrel...");
                    serverOptions.ConfigureHttpsDefaults(listenOptions => SetCertificate(listenOptions));
                })
-               /*.UseSerilog((context, loggerConfiguration) =>
-               {
-                   // read logger's config and set logger...
-                   LoggerHelper loggerHelper = new LoggerHelper();
-                   loggerHelper.Configure(context, loggerConfiguration, Configuration);
-               })*/
                .ConfigureServices((builder, services) =>
                {
                    var inj = new InjectProgramModel();

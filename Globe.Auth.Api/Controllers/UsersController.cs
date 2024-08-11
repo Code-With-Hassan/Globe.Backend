@@ -4,7 +4,7 @@ using Globe.Account.Api.Extensions;
 
 namespace Globe.Account.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UsersController : BaseController
     {

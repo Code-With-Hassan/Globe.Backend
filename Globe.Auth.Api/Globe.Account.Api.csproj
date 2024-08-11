@@ -1,35 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <InvariantGlobalization>false</InvariantGlobalization>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>false</InvariantGlobalization>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.6.1" />
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.2" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.6.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.2" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="8.0.7" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+		<PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+		<PackageReference Include="Serilog.Formatting.Compact" Version="3.0.0" />
+		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 
-  <ItemGroup>
-    <ProjectReference Include="..\Global.Shared\Globe.Shared.csproj" />
-    <ProjectReference Include="..\Globe.Auth.Service\Globe.Account.Service.csproj" />
-    <ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
-  </ItemGroup>
+		<PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+		<PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.2" />
+		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.7.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Globe.Shared\Globe.Shared.csproj" />
+		<ProjectReference Include="..\Globe.Auth.Service\Globe.Account.Service.csproj" />
+		<ProjectReference Include="..\Globe.EventBus.RabbitMQ\Globe.EventBus.RabbitMQ.csproj" />
+		<ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
+	</ItemGroup>
 
 </Project>

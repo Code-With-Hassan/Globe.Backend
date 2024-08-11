@@ -18,7 +18,32 @@
         }
       ]
     },
-    //*********************** Auth Api
+    //*********************** Account Api
+    {
+      "Key": "user",
+      "SwaggerKey": "user",
+      "UpstreamPathTemplate": "/api/v1/users/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "DownstreamPathTemplate": "/api/v1/users/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 6000
+        }
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": [ "sys" ]
+      },
+      "AddHeadersToRequest": {
+        "UserName": "Claims[UserName] > value",
+        "CorelationId": "Claims[jti] > value",
+        "UserId": "Claims[UserId] > value",
+        "OrganizationIds": "Claims[OrganizationIds] > value",
+        "IsSuperUser": "Claims[IsSuperUser] > value"
+      }
+    },
     {
       "Key": "identity",
       "SwaggerKey": "users",
@@ -86,31 +111,6 @@
           "Port": 6006
         }
       ]
-    },
-    {
-      "Key": "user",
-      "SwaggerKey": "user",
-      "UpstreamPathTemplate": "/api/v1/user/{everything}",
-      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "DownstreamPathTemplate": "/api/v1/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 6006
-        }
-      ],
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": [ "sys" ]
-      },
-      "AddHeadersToRequest": {
-        "UserName": "Claims[UserName] > value",
-        "CorelationId": "Claims[jti] > value",
-        "UserId": "Claims[UserId] > value",
-        "OrganizationIds": "Claims[OrganizationIds] > value",
-        "IsSuperUser": "Claims[IsSuperUser] > value"
-      }
     },
     //*********************** Common Foundation Api
     {

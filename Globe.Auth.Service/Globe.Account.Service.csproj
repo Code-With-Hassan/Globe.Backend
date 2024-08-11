@@ -7,22 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.7">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.6" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.6.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.1" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.7" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Global.Shared\Globe.Shared.csproj" />
+    <ProjectReference Include="..\Globe.EventBus.RabbitMQ\Globe.EventBus.RabbitMQ.csproj" />
+    <ProjectReference Include="..\Globe.Shared\Globe.Shared.csproj" />
+    <ProjectReference Include="..\Globe.Domain.Core\Globe.Domain.Core.csproj" />
     <ProjectReference Include="..\Globe.Shared.Entities\Globe.Shared.Entities.csproj" />
     <ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
   </ItemGroup>

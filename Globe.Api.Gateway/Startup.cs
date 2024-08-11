@@ -13,11 +13,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
-using Ocelot;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Polly;
-using Ocelot.ServiceDiscovery.Providers;
+using Serilog;
 using System.Diagnostics;
 using System.Net;
 using System.Reflection;
@@ -60,6 +59,13 @@ namespace Globe.Api.Gateway
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            });
+
+            services.AddSerilog((context, loggerConfiguration) =>
+            {
+                // read logger's config and set logger...
+                LoggerHelper loggerHelper = new();
+                loggerHelper.Configure(loggerConfiguration, Configuration);
             });
 
             // Load routes from configuration.

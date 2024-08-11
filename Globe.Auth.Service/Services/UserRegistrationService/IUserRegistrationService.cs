@@ -1,4 +1,6 @@
-﻿namespace Globe.Account.Service.Services.UserRegistrationService
+﻿using Globe.Account.Service.Models;
+
+namespace Globe.Account.Service.Services.UserRegistrationService
 {
     /// <summary>
     /// 
@@ -12,7 +14,7 @@
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> RegisterUserAsync(string username, string email, string password);
+        Task<UserRegistrationResultModel> RegisterUserAsync(string username, string email, string password);
 
         /// <summary>
         /// 
@@ -21,7 +23,7 @@
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> RegisterAdminAsync(string username, string email, string password);
+        Task<UserRegistrationResultModel> RegisterAdminAsync(string username, string email, string password);
 
         /// <summary>
         /// 
@@ -30,7 +32,7 @@
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> RegisterSuperAdminAsync(string username, string email, string password);
+        Task<UserRegistrationResultModel> RegisterSuperAdminAsync(string username, string email, string password);
 
         /// <summary>
         /// 
@@ -39,6 +41,13 @@
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        Task<bool> RegisterUnverifiedUserAsync(string username, string email, string password);
+        Task<UserRegistrationResultModel> RegisterUnverifiedUserAsync(string username, string email, string password);
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        Dictionary<string,string> GetErrorMessageDictionary(string message);
     }
 }

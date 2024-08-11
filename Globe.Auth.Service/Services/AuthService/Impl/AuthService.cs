@@ -1,5 +1,5 @@
-﻿using Globe.Account.Service.Data;
-using Globe.Account.Service.Services.AuthService;
+﻿using Globe.Domain.Core.Data;
+using Globe.Shared.Entities;
 using Globe.Shared.Models.ResponseDTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +17,10 @@ namespace Globe.Account.Service.Services.AuthService.Impl
     {
         private readonly ILogger<AuthService> _logger;
         private readonly ApplicationDbContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<UserAuthEntity> _userManager;
         private readonly IConfiguration _configuration;
         public AuthService(ILogger<AuthService> logger,
-                            UserManager<IdentityUser> userManager,
+                            UserManager<UserAuthEntity> userManager,
                             IConfiguration configuration,
                             ApplicationDbContext dbContext)
         {
@@ -41,7 +41,7 @@ namespace Globe.Account.Service.Services.AuthService.Impl
 
                 if (user != null && await _userManager.CheckPasswordAsync(user, password))
                 {
-                    await _dbContext.ApplicationUser.ExecuteUpdateAsync(usr => usr.SetProperty(p => p.lastLoggedIn, DateTime.UtcNow));
+                    await _dbContext.Users.ExecuteUpdateAsync(usr => usr.SetProperty(p => p.LastLoggedIn, DateTime.UtcNow));
                     // Retrieve the roles for the user
                     var userRoles = await _userManager.GetRolesAsync(user);
 

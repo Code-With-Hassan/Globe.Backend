@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CF.Api.Gateway": {
+    "Globe.Api.Gateway": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/v1/services",
@@ -26,6 +26,5 @@
       },
       "applicationUrl": "http://localhost:9000"
     }
-  }
   }
 }

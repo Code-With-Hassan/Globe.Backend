@@ -1,4 +1,4 @@
-﻿using Globe.Auth.Api.Models;
+﻿using Globe.Account.Api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Globe.Account.Api.Extensions

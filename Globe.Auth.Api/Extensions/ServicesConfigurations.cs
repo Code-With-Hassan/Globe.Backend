@@ -1,5 +1,4 @@
-﻿using Globe.Shared.Entities;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -13,7 +12,13 @@ using Globe.Account.Service.Services.UserService.Impl;
 using Globe.Account.Service.Services.AuthService.Impl;
 using Globe.Account.Service.Services.UserRegistrationService.Impl;
 using Globe.Account.Service.Services.RoleService.Impl;
-using Globe.Account.Service.Data;
+using Globe.Domain.Core.Data;
+using Microsoft.Extensions.Configuration;
+using Globe.EventBus.RabbitMQ.Config;
+using Globe.EventBus.RabbitMQ.Sender;
+using Globe.EventBus.RabbitMQ.Sender.Impl;
+using Globe.Shared.Entities;
+using Globe.Account.Service.Services;
 
 namespace Globe.Account.Api.Extensions
 {
@@ -25,23 +30,26 @@ namespace Globe.Account.Api.Extensions
         /// <summary>
         /// Configures all necessary services for the application.
         /// </summary>
-        /// <param name="builder">An instance of WebApplicationBuilder used to configure services.</param>
-        public static void ConfigureServices(this WebApplicationBuilder builder)
+        /// <param name="builder">An instance of IServiceCollection used to configure services.</param>
+        public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Configures Entity Framework services, including the database context and Identity.
-            builder.Services.ConfigureEntityFramework(builder.Configuration);
+            services.ConfigureEntityFramework(configuration);
 
             // Configures additional business services and extensions.
-            builder.Services.ConfigureBusinessExtension();
+            services.ConfigureBusinessExtension();
+
+            // Configure the Event Bus service (RabbitMQ)
+            services.ConfigureEventBus(configuration);
 
             // Configures JWT authentication services.
-            builder.Services.ConfigureJWTAuthentication(builder.Configuration);
+            services.ConfigureJWTAuthentication(configuration);
 
             // Adds MVC controllers to the service collection.
-            builder.Services.AddControllers();
+            services.AddControllers();
 
             // Configures Swagger services for API documentation.
-            builder.Services.ConfigureSwaggerService();
+            services.ConfigureSwaggerService();
         }
 
         /// <summary>
@@ -49,16 +57,55 @@ namespace Globe.Account.Api.Extensions
         /// </summary>
         /// <param name="services">An IServiceCollection for registering services.</param>
         /// <param name="configuration">Configuration manager to access configuration settings.</param>
-        public static void ConfigureEntityFramework(this IServiceCollection services, ConfigurationManager configuration)
+        public static void ConfigureEntityFramework(this IServiceCollection services, IConfiguration configuration)
         {
+            // Create Logger Factory
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+
             // Configures the database context to use SQL Server with the specified connection string.
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            {
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+                options.UseLoggerFactory(loggerFactory);
+
+            });
 
             // Adds Identity services with Entity Framework stores and default token providers.
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            /*services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();*/
+
+            // Adding MS Identity and Role to the services
+            services.AddIdentity<UserAuthEntity, IdentityRole>(options =>
+            {
+                // Password settings.
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 1;
+
+                //Lock user
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromSeconds(1);
+                options.Lockout.MaxFailedAccessAttempts = 2;// configuration.GetValue<int>("PasswordAuthentication:WrongAttempt");
+
+                // User settings.
+                options.User.RequireUniqueEmail = true;
+
+                // Signin options.
+                options.SignIn.RequireConfirmedAccount = true;
+
+                // Token provider.
+                options.Tokens.PasswordResetTokenProvider = "Default";
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                //.AddErrorDescriber<CustomIdentityErrorDescriber>()
+                .AddDefaultTokenProviders()
+                .AddTokenProvider<DefaultDataProtectorTokenProvider<UserAuthEntity>>("Default");
+
+
         }
 
         /// <summary>
@@ -81,7 +128,7 @@ namespace Globe.Account.Api.Extensions
         /// </summary>
         /// <param name="services">An IServiceCollection for registering services.</param>
         /// <param name="configuration">Configuration manager to access configuration settings.</param>
-        public static void ConfigureJWTAuthentication(this IServiceCollection services, ConfigurationManager configuration)
+        public static void ConfigureJWTAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             // Retrieves JWT settings from the configuration.
             var jwtSettings = configuration.GetSection("Jwt");
@@ -118,7 +165,12 @@ namespace Globe.Account.Api.Extensions
             // Configures Swagger generation with basic settings.
             services.AddSwaggerGen(options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Globe API", Version = "v1" });
+                options.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "Globe - Accounts Service",
+                    Description = "Globe Foundation - Accounts Service",
+                });
 
                 // Adds JWT authentication to the Swagger UI.
                 var securityScheme = new OpenApiSecurityScheme
@@ -141,6 +193,19 @@ namespace Globe.Account.Api.Extensions
                     { securityScheme, new string[] { } }
                 });
             });
+            
+        }
+
+        /// <summary>
+        /// Configures the event bus.
+        /// </summary>
+        /// <param name="services">The services required to configure.</param>
+        private static void ConfigureEventBus(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddOptions();
+
+            services.Configure<RabbitMqConfiguration>(configuration.GetSection("RabbitMq"));
+            services.AddTransient<IEventSender, EventSender>();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Globe.Account.Service.Data;
-using Globe.Account.Service.Services.UserService;
+﻿using Globe.Domain.Core.Data;
 using Globe.Shared.Models.ResponseDTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,11 +22,7 @@ namespace Globe.Account.Service.Services.UserService.Impl
             {
                 UsersListResponse usersListResponse = new()
                 {
-                    ApplicationUsers = await _dbContext.ApplicationUser
-                                                                    .OrderByDescending(x => x.CreateOn)
-                                                                    .Include(x => x.User)
-                                                                    .Include(x => x.UserOrganizations)
-                                                                    .ToListAsync()
+                    ApplicationUsers = await _dbContext.Users.ToListAsync()
                 };
                 return usersListResponse;
             }

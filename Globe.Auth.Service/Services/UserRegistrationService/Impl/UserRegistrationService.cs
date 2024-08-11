@@ -1,21 +1,34 @@
-﻿using Globe.Account.Service.Data;
+﻿using AutoMapper;
+using Globe.Account.Service.Models;
 using Globe.Account.Service.Services.RoleService;
-using Globe.Account.Service.Services.UserRegistrationService;
+using Globe.Core.AuditHelpers;
+using Globe.Core.Repository;
+using Globe.Core.Repository.impl;
+using Globe.Domain.Core.Data;
+using Globe.EventBus.RabbitMQ.Event;
+using Globe.EventBus.RabbitMQ.Sender;
+using Globe.Shared.Constants;
 using Globe.Shared.Entities;
 using Globe.Shared.Enums;
+using Globe.Shared.Helpers;
+using Globe.Shared.MVC.Resoures;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Reflection;
 
 namespace Globe.Account.Service.Services.UserRegistrationService.Impl
 {
     /// <summary>
     /// Service for user registration.
     /// </summary>
-    public class UserRegistrationService : IUserRegistrationService
+    public class UserRegistrationService : BaseService, IUserRegistrationService
     {
         private readonly IRoleService _roleService;
         private readonly ApplicationDbContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IRepository<UserEntity> _userRepository;
+        private readonly UserManager<UserAuthEntity> _userManager;
         private readonly ILogger<UserRegistrationService> _logger;
 
         /// <summary>
@@ -25,15 +38,22 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="userManager">User manager.</param>
         /// <param name="roleService">Role service.</param>
         /// <param name="logger">Logger service.</param>
-        public UserRegistrationService(ApplicationDbContext dbContext,
-                                        IRoleService roleService,
-                                        UserManager<IdentityUser> userManager,
-                                        ILogger<UserRegistrationService> logger)
+        public UserRegistrationService(IRoleService roleService,
+                                        IEventSender sender,
+                                        ApplicationDbContext dbContext,
+                                        IHttpContextAccessor httpContext,
+                                        UserManager<UserAuthEntity> userManager,
+                                        ILogger<UserRegistrationService> logger) : base(httpContext)
         {
             _logger = logger;
             _dbContext = dbContext;
-            _userManager = userManager;
             _roleService = roleService;
+            _userManager = userManager;
+            _userRepository = new GenericRepository<UserEntity>(dbContext);
+
+            ((GenericRepository<UserEntity>)_userRepository).AfterSave =
+                (logs) => sender.SendEvent(new MQEvent<List<AuditEntry>>(RabbitMqQueuesConstants.AuditQueueName, (List<AuditEntry>)logs));
+
         }
 
         /// <summary>
@@ -43,7 +63,7 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="email">Email.</param>
         /// <param name="password">Password.</param>
         /// <returns>True if registration succeeded, otherwise false.</returns>
-        public async Task<bool> RegisterUserAsync(string username, string email, string password)
+        public async Task<UserRegistrationResultModel> RegisterUserAsync(string username, string email, string password)
         {
             return await RegisterAsync(username, email, password, EUserRole.User.ToString());
         }
@@ -55,7 +75,7 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="email">Email.</param>
         /// <param name="password">Password.</param>
         /// <returns>True if registration succeeded, otherwise false.</returns>
-        public async Task<bool> RegisterAdminAsync(string username, string email, string password)
+        public async Task<UserRegistrationResultModel> RegisterAdminAsync(string username, string email, string password)
         {
             return await RegisterAsync(username, email, password, EUserRole.Admin.ToString());
         }
@@ -67,7 +87,7 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="email">Email.</param>
         /// <param name="password">Password.</param>
         /// <returns>True if registration succeeded, otherwise false.</returns>
-        public async Task<bool> RegisterSuperAdminAsync(string username, string email, string password)
+        public async Task<UserRegistrationResultModel> RegisterSuperAdminAsync(string username, string email, string password)
         {
             return await RegisterAsync(username, email, password, EUserRole.SuperAdmin.ToString());
         }
@@ -79,7 +99,7 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="email">Email.</param>
         /// <param name="password">Password.</param>
         /// <returns>True if registration succeeded, otherwise false.</returns>
-        public async Task<bool> RegisterUnverifiedUserAsync(string username, string email, string password)
+        public async Task<UserRegistrationResultModel> RegisterUnverifiedUserAsync(string username, string email, string password)
         {
             return await RegisterAsync(username, email, password, EUserRole.UnverifiedUser.ToString());
         }
@@ -93,39 +113,77 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
         /// <param name="defaultRole">Default role.</param>
         /// <returns>True if registration succeeded, otherwise false.</returns>
         /// <exception cref="ApplicationException">Thrown when an error occurs during registration.</exception>
-        private async Task<bool> RegisterAsync(string username, string email, string password, string defaultRole = "User")
+        private async Task<UserRegistrationResultModel> RegisterAsync(string username, string email, string password, string defaultRole = "User")
         {
-            try
+            UserRegistrationResultModel response = new UserRegistrationResultModel() { IdentityResult = IdentityResult.Failed() };
+            using (var transaction = _userRepository.GetTransaction())
             {
-                var user = new IdentityUser { UserName = username, Email = email };
-                var result = await _userManager.CreateAsync(user, password);
-
-                if (result.Succeeded)
+                try
                 {
-                    await _roleService.EnsureRoleExistsAsync(defaultRole);
-                    await _roleService.AssignRoleAsync(user.Id, defaultRole);
-
-                    ApplicationUser applicationUser = new ApplicationUser
+                    UserEntity userEntity = new UserEntity()
                     {
-                        CreateOn = DateTime.UtcNow,
-                        UserId = user.Id,
-                        lastLoggedIn = DateTime.MinValue
+                        PasswordResetTime = DateTime.UtcNow,
+                        Email = email,
+                        UserName = username,
+                        IsLocked = false,
+                        IsSuperUser = false,
                     };
 
-                    await _dbContext.ApplicationUser.AddAsync(applicationUser);
-                    await _dbContext.SaveChangesAsync();
+                    _userRepository.Insert(userEntity);
+                    _userRepository.SaveChanges(UserName, DefaultOrganizationId, false);
 
-                    _logger.LogInformation($"User {username} registered successfully with role {defaultRole}.");
+                    response.User = userEntity;
+
+                    // creating empty identity object to be passed to usermanager
+                    var identityUser = new UserAuthEntity()
+                    {
+                        UserName = username,
+                        Email = email,
+                        UserId = userEntity.Id
+                    };
+
+                    var result = await _userManager.CreateAsync(identityUser, password);
+
+                    if (result.Succeeded)
+                    {
+                        await _roleService.EnsureRoleExistsAsync(defaultRole);
+                        await _roleService.AssignRoleAsync(identityUser.Id, defaultRole);
+
+                        // Commit transaction
+                        transaction.Commit();
+
+                        _logger.LogInformation($"User {username} registered successfully with role {defaultRole}.");
+                    }
+                    else
+                    {
+                        transaction.Rollback();
+                    }
                 }
+                catch (DbUpdateException)
+                {
+                    response.Error = new Exception(MsgKeys.UserAlreadyExists);
+                    transaction.Rollback();
+                }
+                catch (Exception ex)
+                {
+                    response.Error = ex;
+                    transaction.Rollback();
+                }
+            }
+            return response;
+        }
 
-                return result.Succeeded;
-            }
-            catch (Exception ex)
+        /// <summary>
+        /// Gets the error message dictionary.
+        /// </summary>
+        /// <param name="error">The error message.</param>
+        /// <returns>A Dictionary object.</returns>
+        public Dictionary<string, string> GetErrorMessageDictionary(string error)
+        {
+            return new Dictionary<string, string>
             {
-                _logger.LogError(ex, "An error occurred during registration.");
-                // Log exception
-                throw new ApplicationException("An error occurred during registration", ex);
-            }
+                [error] = error
+            };
         }
     }
 }

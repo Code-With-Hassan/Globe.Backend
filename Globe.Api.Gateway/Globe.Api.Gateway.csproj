@@ -13,21 +13,21 @@
 		<PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
-		<PackageReference Include="Serilog.Sinks.Seq" Version="5.1.0" />
-		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.9" />
-		<PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="6.0.10" />
-		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.23.1" />
-		<PackageReference Include="Ocelot.Provider.Polly" Version="18.0.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.23.1" />
-		<PackageReference Include="Ocelot" Version="18.0.0" />
-		<PackageReference Include="MMLib.SwaggerForOcelot" Version="5.2.0" />
-		<PackageReference Include="Ocelot.Cache.CacheManager" Version="18.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
+		<PackageReference Include="Serilog.Sinks.Seq" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="8.0.7" />
+		<PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.0.1" />
+		<PackageReference Include="Ocelot.Provider.Polly" Version="23.3.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
+		<PackageReference Include="Ocelot" Version="23.3.3" />
+		<PackageReference Include="MMLib.SwaggerForOcelot" Version="8.3.0" />
+		<PackageReference Include="Ocelot.Cache.CacheManager" Version="23.3.3" />
 
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Global.Shared\Globe.Shared.csproj" />
+	  <ProjectReference Include="..\Globe.Shared\Globe.Shared.csproj" />
 	  <ProjectReference Include="..\Globe.Shared.Models\Globe.Shared.Models.csproj" />
 	</ItemGroup>
 

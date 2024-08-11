@@ -7,6 +7,6 @@ namespace Globe.Shared.Models.ResponseDTOs
     {
         public string Token { get; set; }
         public IdentityUser User { get; set; }
-        public List<UserOrganization> UserOrganizations { get; set; }
+        public List<UserOrganizationsEntity> UserOrganizations { get; set; }
     }
 }
