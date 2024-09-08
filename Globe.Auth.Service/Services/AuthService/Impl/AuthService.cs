@@ -1,4 +1,6 @@
-﻿using Globe.Core.AuditHelpers;
+﻿using Globe.Account.Service.Services.PrivilegesService;
+using Globe.Account.Service.Services.PrivilegesService.Impl;
+using Globe.Core.AuditHelpers;
 using Globe.Core.Repository;
 using Globe.Core.Repository.impl;
 using Globe.Domain.Core.Data;
@@ -6,12 +8,15 @@ using Globe.EventBus.RabbitMQ.Event;
 using Globe.EventBus.RabbitMQ.Sender;
 using Globe.Shared.Constants;
 using Globe.Shared.Entities;
+using Globe.Shared.Models.Privileges;
 using Globe.Shared.Models.ResponseDTOs;
+using Globe.Shared.MVC.Resoures;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
@@ -26,30 +31,36 @@ namespace Globe.Account.Service.Services.AuthService.Impl
         private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<UserAuthEntity> _userManager;
         private readonly IRepository<UserEntity> _userRepository;
-        private readonly IRepository<RoleEntity> _roleRepository;
+        private readonly IRepository<OrganizationEntity> _organizationRepository;
+        private readonly IPrivilegesService _privilegesService;
+        private readonly ISuperUserPrivilegesService _superUserPrivilegesService;
         private readonly IRepository<ApplicationEntity> _applicationRepository;
-        private readonly IRepository<RoleScreenEntity> _roleScreenRepository;
+        private readonly IRepository<RoleOrganizationsEntity> _roleOrganizationRepository;
         private readonly IConfiguration _configuration;
 
         public AuthService(ILogger<AuthService> logger,
                             IEventSender sender,
                             UserManager<UserAuthEntity> userManager,
                             IConfiguration configuration,
-                            ApplicationDbContext dbContext)
+                            ApplicationDbContext dbContext,
+                            IPrivilegesService privilegesService,
+                            ISuperUserPrivilegesService superUserPrivilegesService)
         {
             _logger = logger;
             _dbContext = dbContext;
             _userManager = userManager;
             _configuration = configuration;
+            _privilegesService = privilegesService;
+            _superUserPrivilegesService = superUserPrivilegesService;
             _userRepository = new GenericRepository<UserEntity>(dbContext);
-            _roleRepository = new GenericRepository<RoleEntity>(dbContext);
             _applicationRepository = new GenericRepository<ApplicationEntity>(dbContext);
-            _roleScreenRepository = new GenericRepository<RoleScreenEntity>(dbContext);
+            _organizationRepository = new GenericRepository<OrganizationEntity>(dbContext);
+            _roleOrganizationRepository = new GenericRepository<RoleOrganizationsEntity>(dbContext);
 
-            ((GenericRepository<UserEntity>)_roleRepository).AfterSave =
             ((GenericRepository<UserEntity>)_userRepository).AfterSave =
             ((GenericRepository<UserEntity>)_applicationRepository).AfterSave =
-            ((GenericRepository<UserEntity>)_roleScreenRepository).AfterSave =
+            ((GenericRepository<UserEntity>)_organizationRepository).AfterSave =
+            ((GenericRepository<RoleOrganizationsEntity>)_roleOrganizationRepository).AfterSave =
                 (logs) => sender.SendEvent(new MQEvent<List<AuditEntry>>(RabbitMqQueuesConstants.AuditQueueName, (List<AuditEntry>)logs));
 
         }
@@ -59,59 +70,57 @@ namespace Globe.Account.Service.Services.AuthService.Impl
             try
             {
                 var user = await _userManager.FindByNameAsync(username);
-                user.User = await _userRepository.Query(x => x.Id == user.UserId)
+
+                if (user is null)
+                {
+                    throw new Exception(MsgKeys.UsernameIsIncorrect);
+                }
+                else
+                {
+                    var userEntity = await _userRepository.Query(x => x.Id == user.UserId)
                                                 .Include(x => x.UserRoles)
                                                 .AsSplitQuery()
                                                 .FirstOrDefaultAsync();
 
-                if (user is null)
-                    throw new Exception("Invalid username");
+                    if (userEntity is null)
+                        throw new Exception(MsgKeys.UsernameIsIncorrect);
 
-                if (user != null && await _userManager.CheckPasswordAsync(user, password))
-                {
-                    await _dbContext.Users.Where(x => x.Id == user.UserId)
-                                    .ExecuteUpdateAsync(usr => usr.SetProperty(p => p.LastLoggedIn, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
+                    user.User = userEntity;
 
-                    ApplicationEntity defaultApplication = new();
-                    List<RoleScreenEntity> roleScreenEntries = new();
-                    List<ApplicationEntity> allowedApplications = new();
-                    
-                    if (user.User.IsSuperUser)
+                    if (user != null && await _userManager.CheckPasswordAsync(user, password))
                     {
-                        var roles = await _roleRepository.Query(x => user.User.UserRoles.Select(y => y.RoleId).Contains(x.Id))
-                                                            .Include(x => x.RoleScreens)
-                                                            .Include(x => x.DefaultApplication)
-                                                            .ToListAsync();
+                        await _userRepository.Query(x => x.Id == user.UserId)
+                                        .ExecuteUpdateAsync(usr => usr.SetProperty(p => p.LastLoggedIn, DateTimeOffset.UtcNow.ToUnixTimeSeconds()));
 
-                        roleScreenEntries = await _roleScreenRepository.Query().ToListAsync();
-                        allowedApplications = await _applicationRepository.Query().ToListAsync();
+                        List<long> organizationIds = new();
+                        UserReadPrivilegesModel userPrivileges = new UserReadPrivilegesModel();
+
+                        if (user.User.IsSuperUser)
+                        {
+                            userPrivileges = await _superUserPrivilegesService.GetSuperUserPrivilegesAsync(user.UserId);
+
+                            // get all company ids from auth service
+                            organizationIds = await GetAllCompaniesIds();
+                        }
+                        else
+                        {
+                            userPrivileges = await _privilegesService.GetUserPrivilegesAsync(user.UserId);
+
+                            // get associated company ids from auth service
+                            organizationIds = await GetAssociatedCompaniesId(user.User.UserRoles.Select(y => y.RoleId).ToList());
+                        }
 
 
-                        defaultApplication = roles.FirstOrDefault().DefaultApplication;
+                        return new LoginDTO
+                        {
+                            User = userPrivileges,
+                            Token = await GenerateJwtToken(user, organizationIds,
+                                                            userPrivileges.GetAllowedScreensList(),
+                                                            userPrivileges.AllowedApplications)
+                        };
                     }
-                    else
-                    {
-                        var roles = await _roleRepository.Query(x => user.User.UserRoles.Select(y => y.RoleId).Contains(x.Id))
-                                                            .Include(x => x.RoleApplications)
-                                                                .ThenInclude(x => x.Application)
-                                                            .Include(x => x.RoleScreens)
-                                                            .Include(x => x.DefaultApplication)
-                                                            .ToListAsync();
-
-                    }
-
-                    LoginDTO response = new LoginDTO
-                    {
-                        AllowedScreen = roleScreenEntries,
-                        AllowedApplications = allowedApplications,
-                        DefaultApplication = defaultApplication,
-                        User = user.User,
-                        Token = await GenerateJwtToken(user)
-                    };
-                    return response;
+                    throw new Exception("Invalid username or password");
                 }
-
-                throw new Exception("Invalid username or password");
             }
             catch (Exception ex)
             {
@@ -120,7 +129,20 @@ namespace Globe.Account.Service.Services.AuthService.Impl
             }
         }
 
-        private async Task<string> GenerateJwtToken(UserAuthEntity user)
+        private async Task<List<long>> GetAssociatedCompaniesId(List<long> roles) =>
+            await _roleOrganizationRepository
+                              .Query(x => roles.Contains(x.RoleId))
+                              .Select(x => x.OrganizationId)
+                              .ToListAsync();
+
+        private async Task<List<long>> GetAllCompaniesIds() =>
+            await _organizationRepository.Query()
+                                         .OrderBy(x => x.Id)
+                                         .Select(x => x.Id)
+                                         .ToListAsync();
+
+        private async Task<string> GenerateJwtToken(UserAuthEntity user, List<long> organizationIds,
+                                                    List<string> allowedScreensList, List<string> allowedApplicationsList)
         {
             return await Task.Run(() =>
             {
@@ -132,10 +154,10 @@ namespace Globe.Account.Service.Services.AuthService.Impl
                 {
                     new Claim(IAuthConstants.UserId,user.Id.ToString()),
                     new Claim(IAuthConstants.IsSuperUser, user.User.IsSuperUser.ToString()),
-                    //new Claim(IAuthConstants.OrganizationIds, JsonConvert.SerializeObject(organizationIds).ToString()),
+                    new Claim(IAuthConstants.OrganizationIds, JsonConvert.SerializeObject(organizationIds).ToString()),
                     new Claim(IAuthConstants.UserName, user.UserName),
-                    //new Claim(IAuthConstants.Privileges, JsonConvert.SerializeObject(allowedScreensList)),
-                    //new Claim(IAuthConstants.Applications, JsonConvert.SerializeObject(allowedApplicationsList)),
+                    new Claim(IAuthConstants.Privileges, JsonConvert.SerializeObject(allowedScreensList)),
+                    new Claim(IAuthConstants.Applications, JsonConvert.SerializeObject(allowedApplicationsList)),
                     new Claim(IAuthConstants.Scope, IAuthConstants.System),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
