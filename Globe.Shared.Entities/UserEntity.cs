@@ -30,13 +30,16 @@
         /// <summary>
         /// Gets or sets the last user login time.
         /// </summary>
-        public DateTime? LastLoggedIn { get; set; }
+        public long? LastLoggedIn { get; set; }
 
         /// <summary>
         /// Gets or sets the PasswordResetTime.
         /// </summary>
-        public DateTime PasswordResetTime { get; set; }
+        public long? PasswordResetTime { get; set; }
 
-        //public virtual ICollection<UserOrganizationsEntity> UserOrganizations { get; set; }
+        /// <summary>
+        /// Gets or sets the UserRoles.
+        /// </summary>
+        public ICollection<UserRoleEntity> UserRoles { get; set; }
     }
 }

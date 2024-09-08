@@ -7,5 +7,7 @@
         public static readonly string SystemAdmin = "Admin";
 
         public static readonly int DefaultOrganizationId = 0;
+
+        public static readonly string JsonExtension = ".json";
     }
 }

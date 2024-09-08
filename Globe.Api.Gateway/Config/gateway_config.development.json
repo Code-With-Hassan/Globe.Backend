@@ -6,30 +6,29 @@
     //*********************** Login Api
     {
       "Key": "identity",
-      "SwaggerKey": "users",
       "UpstreamPathTemplate": "/api/v1/login",
       "UpstreamHttpMethod": [ "POST" ],
-      "DownstreamPathTemplate": "/api/v1/auth",
+      "DownstreamPathTemplate": "/api/v1/Auth",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6000
+          "Port": 6001
         }
       ]
     },
     //*********************** Account Api
     {
       "Key": "user",
-      "SwaggerKey": "user",
-      "UpstreamPathTemplate": "/api/v1/users/{everything}",
+      "SwaggerKey": "users",
+      "UpstreamPathTemplate": "/api/v1/Account/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
-      "DownstreamPathTemplate": "/api/v1/users/{everything}",
+      "DownstreamPathTemplate": "/api/v1/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 6000
+          "Port": 6001
         }
       ],
       "AuthenticationOptions": {

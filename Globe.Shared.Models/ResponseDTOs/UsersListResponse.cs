@@ -4,6 +4,10 @@ namespace Globe.Shared.Models.ResponseDTOs
 {
     public class UsersListResponse
     {
-        public List<UserEntity> ApplicationUsers { get; set; }
+        public UsersListResponse(List<UserEntity> users)
+        {
+            Users = users;
+        }
+        public List<UserEntity> Users { get; set; }
     }
 }

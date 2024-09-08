@@ -102,9 +102,6 @@ namespace Globe.Api.Gateway
                 };
             });
 
-            // Load routes from configuration.
-            services.Configure<List<Ocelot.Configuration.File.FileRoute>>(Configuration.GetSection("Routes"));
-
             // Ocelot pipeline configuration service settings.
             services.Configure<AuthMiddlewareSettings>(Configuration.GetSection(nameof(AuthMiddlewareSettings)));
 
@@ -131,6 +128,8 @@ namespace Globe.Api.Gateway
             // Configure known networks and proxies
             ConfigureKnownNetworksAndProxies();
 
+            services.AddSwaggerForOcelot(Configuration);
+            
             // Add http client
             services.AddHttpClient();
 
@@ -150,7 +149,6 @@ namespace Globe.Api.Gateway
             LoggingSettingsModel loggingSettings = new LoggingSettingsModel();
             Configuration.GetSection("LoggingSettings").Bind(loggingSettings);
             services.AddSingleton(loggingSettings);
-
             services.AddScoped<LogMaskingHelper>();
             services.AddScoped<LogEntryDegradeHelper>();
         }
@@ -231,6 +229,11 @@ namespace Globe.Api.Gateway
             logger.LogInformation("Version: {Version}", Assembly.GetExecutingAssembly().GetName().Version);
             logger.LogInformation("Profile: {ProcessName}", System.Diagnostics.Process.GetCurrentProcess().ProcessName);
 
+            app.UseSwaggerForOcelotUI(opt =>
+            {
+                opt.PathToSwaggerGenerator = "/swagger/docs";
+            });
+            
             if (!string.IsNullOrWhiteSpace(Configuration[AppLoggingConfigurationKeys.Enabled]) && Configuration[AppLoggingConfigurationKeys.Enabled].ToLower() == "true")
                 app.UseLoggerMiddleware();   //<--- THIS IS A CUSTOM LOGGING MIDDLEWARE BASED ON THE SERILOG'S MIDDLEWARE
 
@@ -290,6 +293,7 @@ namespace Globe.Api.Gateway
 
             // App ocelot capabilities
             await app.UseOcelot(ocelotPipelineConfig);
+
         }
     }
 }

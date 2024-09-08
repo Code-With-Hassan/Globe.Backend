@@ -12,6 +12,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Content Include="SqlScripts\**\*.sql" CopyToPublishDirectory="PreserveNewest" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Folder Include="Migrations\" />
 	</ItemGroup>
 

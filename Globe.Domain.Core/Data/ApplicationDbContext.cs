@@ -22,9 +22,48 @@ namespace Globe.Domain.Core.Data
         new public DbSet<UserEntity> Users { get; set; }
 
         /// <summary>
-        /// Gets or sets the user auth.
+        /// Gets or sets the user organizations.
         /// </summary>
-        //public DbSet<UserAuthEntity> UserAuth { get; set; }
-    }
+        public DbSet<OrganizationEntity> Organizations { get; set; }
 
+        /// <summary>
+        /// Gets or sets the applications
+        /// </summary>
+        public DbSet<ApplicationEntity> Applications { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Roles.
+        /// </summary>
+        public DbSet<RoleEntity> Roles { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Role Screen.
+        /// </summary>
+        public DbSet<RoleScreenEntity> RoleScreens { get; set; }
+
+        /// <summary>
+        /// Gets or sets role organizations
+        /// </summary>
+        public DbSet<RoleOrganizationsEntity> RoleOrganizations { get; set; }
+
+        /// <summary>
+        /// Gets or sets role applications
+        /// </summary>
+        public DbSet<RoleApplicationEntity> RoleApplications { get; set; }
+        
+        /// <summary>
+        /// Gets or sets screens
+        /// </summary>
+        public DbSet<ScreenEntity> Screens { get; set; }
+
+        /// <summary>
+        /// Gets or sets user roles
+        /// </summary>
+        public DbSet<UserRoleEntity> UserRoles { get; set; }
+        
+        /// <summary>
+        /// Gets or sets Common Addresses
+        /// </summary>
+        public DbSet<AddressEntity> CommonAddresses { get; set; }
+    }
 }

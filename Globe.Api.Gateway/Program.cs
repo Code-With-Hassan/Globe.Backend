@@ -7,7 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
 using Globe.Shared.Helpers;
 using Globe.Shared.Models;
-
+using Globe.Shared.Extensions;
 
 namespace Globe.Api.Gateway
 {
@@ -84,16 +84,17 @@ namespace Globe.Api.Gateway
                 {
                     // Specifying the routes config to the app config. 
                     // This will be used by Ocelot
-                    string environmentName = host.HostingEnvironment.EnvironmentName.ToLower();
-                    config.AddJsonFile(Path.Combine(CurrentPath, $"appsettings.json"));
+                    string environmentName = host.HostingEnvironment.EnvironmentName;
 
-                    // Set current environment config file
-                    var environmentConfigFile = Path.Combine(CurrentPath, environmentName.ToLower() == "development" ? "appsettings.Development.json" : "appsettings.Production.json");
+                    string[] configurationFiles =
+                        [
+                            "appsettings.json",
+                            Path.Combine("Config", "gateway_config.json"),
+                            Path.Combine("Config", "swagger_config.json")
+                        ];
 
-                    // Check if environment config file exists or not, if exists, build configuration
-                    if (File.Exists(environmentConfigFile)) config.AddJsonFile(environmentConfigFile);
+                    config.AddJsonFilesWithEnvironments(CurrentPath, configurationFiles, environmentName);
 
-                    config.AddJsonFile(Path.Combine(CurrentPath, "Config", $"gateway_config.{environmentName}.json"));
                     if (Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true")
                         config.AddEnvironmentVariables();
                 });

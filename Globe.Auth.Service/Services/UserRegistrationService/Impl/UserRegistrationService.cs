@@ -122,7 +122,7 @@ namespace Globe.Account.Service.Services.UserRegistrationService.Impl
                 {
                     UserEntity userEntity = new UserEntity()
                     {
-                        PasswordResetTime = DateTime.UtcNow,
+                        PasswordResetTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                         Email = email,
                         UserName = username,
                         IsLocked = false,

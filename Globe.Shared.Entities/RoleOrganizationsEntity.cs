@@ -1,17 +1,18 @@
-﻿
+﻿using Globe.Core.Entities.Base;
+
 namespace Globe.Shared.Entities
 {
-    public class UserOrganizationsEntity
+    public class RoleOrganizationsEntity : BaseEntity
     {
         /// <summary>
         /// Gets or sets the user id.
         /// </summary>
-        public long UserId { get; set; }
+        public long RoleId { get; set; }
 
         /// <summary>
         /// Gets or sets the user.
         /// </summary>
-        public UserEntity User { get; set; }
+        public RoleEntity Role { get; set; }
 
         /// <summary>
         /// Gets or sets the role id.

@@ -20,11 +20,7 @@ namespace Globe.Account.Service.Services.UserService.Impl
         {
             try
             {
-                UsersListResponse usersListResponse = new()
-                {
-                    ApplicationUsers = await _dbContext.Users.ToListAsync()
-                };
-                return usersListResponse;
+                return new(await _dbContext.Users.ToListAsync());
             }
             catch (Exception ex)
             {
