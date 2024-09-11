@@ -6,14 +6,11 @@ namespace Globe.Account.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class UsersController : BaseController
+    public class UsersController : BaseController<UsersController>
     {
         private readonly IUserService _userService;
-        private readonly ILogger<AuthController> _logger;
-
-        public UsersController(IUserService userService, ILogger<AuthController> logger)
+        public UsersController(IUserService userService, ILogger<UsersController> logger) : base(logger)
         {
-            _logger = logger;
             _userService = userService;
         }
 

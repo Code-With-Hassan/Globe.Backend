@@ -3,8 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Globe.Account.Api.Extensions
 {
-    public abstract class BaseController : ControllerBase
+    public abstract class BaseController<C> : ControllerBase
     {
+        protected readonly ILogger<C> _logger;
+
+        public BaseController(ILogger<C> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         /// Returns an Ok response with a standardized format.
         /// </summary>

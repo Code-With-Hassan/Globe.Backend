@@ -9,15 +9,13 @@ namespace Globe.Account.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class AccountController : BaseController
+    public class AccountController : BaseController<AccountController>
     {
-        private readonly ILogger<AccountController> _logger;
         private readonly IUserRegistrationService _userRegistrationService;
 
-        public AccountController(ILogger<AccountController> logger, 
-                                    IUserRegistrationService userRegistrationService)
+        public AccountController(ILogger<AccountController> logger,
+                                    IUserRegistrationService userRegistrationService) : base(logger)
         {
-            _logger = logger;
             _userRegistrationService = userRegistrationService;
         }
 

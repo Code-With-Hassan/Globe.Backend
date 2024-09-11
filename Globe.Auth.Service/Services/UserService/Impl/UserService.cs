@@ -1,18 +1,17 @@
 ﻿using Globe.Domain.Core.Data;
+using Globe.Shared.Helpers;
 using Globe.Shared.Models.ResponseDTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Globe.Account.Service.Services.UserService.Impl
 {
-    public class UserService : IUserService
+    public class UserService : BaseService<UserService>, IUserService
     {
-        private readonly ILogger<UserService> _logger;
         private readonly ApplicationDbContext _dbContext;
 
-        public UserService(ILogger<UserService> logger, ApplicationDbContext dbContext)
+        public UserService(ILogger<UserService> logger, ApplicationDbContext dbContext): base(logger)
         {
-            _logger = logger;
             _dbContext = dbContext;
         }
 

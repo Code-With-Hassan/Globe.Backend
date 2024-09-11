@@ -1,12 +1,10 @@
-﻿using Globe.Audit.Api.Controllers;
-using Globe.Audit.Api.Database;
+﻿using Globe.Audit.Api.Database;
 using Globe.Audit.Api.Helpers;
 using Globe.Audit.Api.Models;
-using Globe.Core.AuditHelpers;
 using Globe.Core.Entities;
 using Globe.Core.Repository;
 using Globe.Core.Repository.impl;
-using Globe.EventBus.RabbitMQ.Event;
+using Globe.EventBus.RabbitMQ.Extensions;
 using Globe.EventBus.RabbitMQ.Sender;
 using Globe.Shared.Constants;
 using Globe.Shared.Helpers;
@@ -18,12 +16,11 @@ namespace Globe.Audit.Api.Services.Impl
     /// <summary>
     /// The AuditService.
     /// </summary>
-    public class AuditService : BaseService, IAuditService
+    public class AuditService : BaseService<AuditService>, IAuditService
     {
-        private readonly ILogger _logger;
         private readonly IRepository<AuditEntity> _auditRepository;
         private readonly IRepository<AuditTableEntity> _auditTableRepository;
-        private readonly IRepository<AuditOrganizationEntity> _auditOrginzationRepository;
+        private readonly IRepository<AuditOrganizationEntity> _auditOrganizationRepository;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AuditService"/> class.
@@ -31,21 +28,19 @@ namespace Globe.Audit.Api.Services.Impl
         /// <param name="context">The audit database context.</param>
         /// <param name="logger">The audit controller logger.</param>
         /// <param name="httpContext"></param>
-        public AuditService(AuditDbContext context, ILogger<AuditController> logger, IEventSender sender,
+        public AuditService(AuditDbContext context, ILogger<AuditService> logger, IEventSender sender,
                             IHttpContextAccessor httpContext)
-                            : base(httpContext)
+                            : base(logger, httpContext)
         {
             _auditRepository = new GenericRepository<AuditEntity>(context);
             _auditTableRepository = new GenericRepository<AuditTableEntity>(context);
-            _auditOrginzationRepository = new GenericRepository<AuditOrganizationEntity>(context);
-            _logger = logger;
-            ((GenericRepository<AuditEntity>)_auditRepository).AfterSave = (logs) =>
-            {
-                sender.SendEvent(new MQEvent<List<AuditEntry>>(RabbitMqQueuesConstants.AuditQueueName, (List<AuditEntry>)logs));
-            };
+            _auditOrganizationRepository = new GenericRepository<AuditOrganizationEntity>(context);
+
+            sender.SetAfterSaveEvent<AuditEntity>(_auditRepository);
+            sender.SetAfterSaveEvent<AuditTableEntity>(_auditTableRepository);
+            sender.SetAfterSaveEvent<AuditOrganizationEntity>(_auditOrganizationRepository);
         }
 
-        //Read
         /// <summary>
         /// Gets the paged result.
         /// </summary>
@@ -70,7 +65,7 @@ namespace Globe.Audit.Api.Services.Impl
                 }
                 else
                 {
-                    var OrgSpecificAuditsIds = _auditOrginzationRepository.Query(x => OrganizationIds.Contains(x.OrganizationId))
+                    var OrgSpecificAuditsIds = _auditOrganizationRepository.Query(x => OrganizationIds.Contains(x.OrganizationId))
                                      .Select(x => x.AuditId);
 
                     queryResult = _auditRepository.GetPaginatedByQuery(
@@ -138,9 +133,9 @@ namespace Globe.Audit.Api.Services.Impl
                                                     .Select(x => AuditEntryConverter.AssociateOrgToAudits(x, entity.Id))
                                                     .ToList();
 
-                orgAudits.ForEach(x => _auditOrginzationRepository.Insert(x));
+                orgAudits.ForEach(x => _auditOrganizationRepository.Insert(x));
 
-                _auditOrginzationRepository.SaveChanges(UserName, DefaultOrganizationId);
+                _auditOrganizationRepository.SaveChanges(UserName, DefaultOrganizationId);
             }
 
         }
@@ -173,9 +168,9 @@ namespace Globe.Audit.Api.Services.Impl
                 var auditOrganization = new AuditOrganizationEntity();
                 auditOrganization.AuditId = entityId;
                 auditOrganization.OrganizationId = org;
-                _auditOrginzationRepository.Insert(auditOrganization);
+                _auditOrganizationRepository.Insert(auditOrganization);
             }
-            _auditOrginzationRepository.SaveChanges(SystemConstants.SystemUsername, new());
+            _auditOrganizationRepository.SaveChanges(SystemConstants.SystemUsername, new());
         }
 
 

@@ -1,13 +1,10 @@
-﻿using AutoMapper;
-using Globe.Account.Service.Models;
+﻿using Globe.Account.Service.Models;
 using Globe.Account.Service.Services.RoleService;
-using Globe.Core.AuditHelpers;
 using Globe.Core.Repository;
 using Globe.Core.Repository.impl;
 using Globe.Domain.Core.Data;
-using Globe.EventBus.RabbitMQ.Event;
+using Globe.EventBus.RabbitMQ.Extensions;
 using Globe.EventBus.RabbitMQ.Sender;
-using Globe.Shared.Constants;
 using Globe.Shared.Entities;
 using Globe.Shared.Enums;
 using Globe.Shared.Helpers;
@@ -16,44 +13,39 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 
 namespace Globe.Account.Service.Services.UserRegistrationService.Impl
 {
     /// <summary>
     /// Service for user registration.
     /// </summary>
-    public class UserRegistrationService : BaseService, IUserRegistrationService
+    public class UserRegistrationService : BaseService<UserRegistrationService>, IUserRegistrationService
     {
         private readonly IRoleService _roleService;
-        private readonly ApplicationDbContext _dbContext;
         private readonly IRepository<UserEntity> _userRepository;
         private readonly UserManager<UserAuthEntity> _userManager;
-        private readonly ILogger<UserRegistrationService> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UserRegistrationService"/> class.
         /// </summary>
-        /// <param name="dbContext">Database context.</param>
-        /// <param name="userManager">User manager.</param>
         /// <param name="roleService">Role service.</param>
+        /// <param name="sender">IEventSender for RabbitMQ</param>
+        /// <param name="dbContext">Database context.</param>
+        /// <param name="httpContext">HTTP Context Accessor</param>
+        /// <param name="userManager">User manager.</param>
         /// <param name="logger">Logger service.</param>
         public UserRegistrationService(IRoleService roleService,
                                         IEventSender sender,
                                         ApplicationDbContext dbContext,
                                         IHttpContextAccessor httpContext,
                                         UserManager<UserAuthEntity> userManager,
-                                        ILogger<UserRegistrationService> logger) : base(httpContext)
+                                        ILogger<UserRegistrationService> logger) : base(logger, httpContext)
         {
-            _logger = logger;
-            _dbContext = dbContext;
             _roleService = roleService;
             _userManager = userManager;
             _userRepository = new GenericRepository<UserEntity>(dbContext);
 
-            ((GenericRepository<UserEntity>)_userRepository).AfterSave =
-                (logs) => sender.SendEvent(new MQEvent<List<AuditEntry>>(RabbitMqQueuesConstants.AuditQueueName, (List<AuditEntry>)logs));
-
+            sender.SetAfterSaveEvent<UserEntity>(_userRepository);
         }
 
         /// <summary>

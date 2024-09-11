@@ -1,13 +1,12 @@
-﻿using Globe.Account.Service.Services.RoleService;
-using Globe.Shared.Entities;
+﻿using Globe.Shared.Entities;
+using Globe.Shared.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 namespace Globe.Account.Service.Services.RoleService.Impl
 {
-    public class RoleService : IRoleService
+    public class RoleService : BaseService<RoleService>, IRoleService
     {
-        private readonly ILogger<RoleService> _logger;
         private readonly UserManager<UserAuthEntity> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
@@ -19,9 +18,8 @@ namespace Globe.Account.Service.Services.RoleService.Impl
         /// <param name="logger">Logger service.</param>
         public RoleService(ILogger<RoleService> logger,
                             UserManager<UserAuthEntity> userManager,
-                            RoleManager<IdentityRole> roleManager)
+                            RoleManager<IdentityRole> roleManager): base(logger)
         {
-            _logger = logger;
             _userManager = userManager;
             _roleManager = roleManager;
         }

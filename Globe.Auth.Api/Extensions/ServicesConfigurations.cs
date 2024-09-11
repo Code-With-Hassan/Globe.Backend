@@ -1,24 +1,25 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Globe.Account.Service.Services;
+using Globe.Account.Service.Services.AuthService;
+using Globe.Account.Service.Services.AuthService.Impl;
+using Globe.Account.Service.Services.PrivilegesService;
+using Globe.Account.Service.Services.PrivilegesService.Impl;
+using Globe.Account.Service.Services.RoleService;
+using Globe.Account.Service.Services.RoleService.Impl;
+using Globe.Account.Service.Services.UserRegistrationService;
+using Globe.Account.Service.Services.UserRegistrationService.Impl;
+using Globe.Account.Service.Services.UserService;
+using Globe.Account.Service.Services.UserService.Impl;
+using Globe.Domain.Core.Data;
+using Globe.EventBus.RabbitMQ.Config;
+using Globe.EventBus.RabbitMQ.Sender;
+using Globe.EventBus.RabbitMQ.Sender.Impl;
+using Globe.Shared.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using Globe.Account.Service.Services.RoleService;
-using Globe.Account.Service.Services.UserRegistrationService;
-using Globe.Account.Service.Services.UserService;
-using Globe.Account.Service.Services.AuthService;
-using Globe.Account.Service.Services.UserService.Impl;
-using Globe.Account.Service.Services.AuthService.Impl;
-using Globe.Account.Service.Services.UserRegistrationService.Impl;
-using Globe.Account.Service.Services.RoleService.Impl;
-using Globe.Domain.Core.Data;
-using Microsoft.Extensions.Configuration;
-using Globe.EventBus.RabbitMQ.Config;
-using Globe.EventBus.RabbitMQ.Sender;
-using Globe.EventBus.RabbitMQ.Sender.Impl;
-using Globe.Shared.Entities;
-using Globe.Account.Service.Services;
 
 namespace Globe.Account.Api.Extensions
 {
@@ -119,6 +120,8 @@ namespace Globe.Account.Api.Extensions
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+            services.AddScoped<IPrivilegesService, PrivilegesService>();
+            services.AddScoped<ISuperUserPrivilegesService, SuperUserPrivilegesService>();
 
             services.AddLogging();
         }
@@ -193,7 +196,7 @@ namespace Globe.Account.Api.Extensions
                     { securityScheme, new string[] { } }
                 });
             });
-            
+
         }
 
         /// <summary>

@@ -1,12 +1,12 @@
 ﻿using Globe.Account.Service.Services.PrivilegesService;
-using Globe.Core.AuditHelpers;
 using Globe.Core.Repository;
 using Globe.Core.Repository.impl;
 using Globe.Domain.Core.Data;
-using Globe.EventBus.RabbitMQ.Event;
+using Globe.EventBus.RabbitMQ.Extensions;
 using Globe.EventBus.RabbitMQ.Sender;
 using Globe.Shared.Constants;
 using Globe.Shared.Entities;
+using Globe.Shared.Helpers;
 using Globe.Shared.Models.Privileges;
 using Globe.Shared.Models.ResponseDTOs;
 using Globe.Shared.MVC.Resoures;
@@ -23,9 +23,8 @@ using System.Text;
 
 namespace Globe.Account.Service.Services.AuthService.Impl
 {
-    public class AuthService : IAuthService
+    public class AuthService : BaseService<AuthService>, IAuthService
     {
-        private readonly ILogger<AuthService> _logger;
         private readonly IConfiguration _configuration;
         private readonly IPrivilegesService _privilegesService;
         private readonly UserManager<UserAuthEntity> _userManager;
@@ -52,9 +51,8 @@ namespace Globe.Account.Service.Services.AuthService.Impl
                             IConfiguration configuration,
                             ApplicationDbContext dbContext,
                             IPrivilegesService privilegesService,
-                            ISuperUserPrivilegesService superUserPrivilegesService)
+                            ISuperUserPrivilegesService superUserPrivilegesService) : base(logger)
         {
-            _logger = logger;
             _userManager = userManager;
             _configuration = configuration;
             _privilegesService = privilegesService;
@@ -66,10 +64,9 @@ namespace Globe.Account.Service.Services.AuthService.Impl
             _roleOrganizationRepository = new GenericRepository<RoleOrganizationsEntity>(dbContext);
 
             // Event triggered after saving logs to the database, sending logs to RabbitMQ queue.
-            ((GenericRepository<UserEntity>)_userRepository).AfterSave =
-            ((GenericRepository<UserEntity>)_organizationRepository).AfterSave =
-            ((GenericRepository<RoleOrganizationsEntity>)_roleOrganizationRepository).AfterSave =
-                (logs) => sender.SendEvent(new MQEvent<List<AuditEntry>>(RabbitMqQueuesConstants.AuditQueueName, (List<AuditEntry>)logs));
+            sender.SetAfterSaveEvent<UserEntity>(_userRepository);
+            sender.SetAfterSaveEvent<OrganizationEntity>(_organizationRepository);
+            sender.SetAfterSaveEvent<RoleOrganizationsEntity>(_roleOrganizationRepository);
         }
 
         /// <summary>

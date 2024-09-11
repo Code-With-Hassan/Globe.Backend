@@ -11,10 +11,10 @@ namespace Globe.Shared.Models.Privileges
         public long ScreenId { get; set; }
 
         /// <summary>
-        /// Gets or sets the Screen Priviliges.
+        /// Gets or sets the Screen Privileges.
         /// 0 = None, 1 = Admin, 2 = Custom, 3=ReadOnly
         /// </summary>
         [Required]
-        public int ScreenPriviliges { get; set; }
+        public int ScreenPrivileges { get; set; }
     }
 }

@@ -9,8 +9,7 @@ namespace Globe.Domain.Core.Data
     {
         private readonly IEncryptionProvider _provider;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEncryptionProvider provider)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IEncryptionProvider provider) : base(options)
         {
             _provider = provider;
             ChangeTracker.LazyLoadingEnabled = false;
@@ -50,7 +49,7 @@ namespace Globe.Domain.Core.Data
         /// Gets or sets role applications
         /// </summary>
         public DbSet<RoleApplicationEntity> RoleApplications { get; set; }
-        
+
         /// <summary>
         /// Gets or sets screens
         /// </summary>
@@ -60,7 +59,7 @@ namespace Globe.Domain.Core.Data
         /// Gets or sets user roles
         /// </summary>
         public DbSet<UserRoleEntity> UserRoles { get; set; }
-        
+
         /// <summary>
         /// Gets or sets Common Addresses
         /// </summary>

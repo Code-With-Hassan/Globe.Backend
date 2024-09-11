@@ -5,10 +5,10 @@ SET IDENTITY_INSERT [dbo].[Applications] OFF;
 
 SET IDENTITY_INSERT [dbo].[Screens] ON;
     INSERT [dbo].[Screens] ([Id], [ScreenName], [IsActive], [CreatedAt], [UpdatedAt], [ApplicationId], [ScreenPrivilege]) 
-    VALUES (2, N'users', 1, 0, 0, 1, 1),
-           (3, N'role', 1, 0, 0, 1, 1),
-           (4, N'organizations', 1, 0, 0, 1, 1),
-           (5, N'audit', 1, 0, 0, 1, 1);
+    VALUES (1, N'users', 1, 0, 0, 1, 1),
+           (2, N'role', 1, 0, 0, 1, 1),
+           (3, N'organizations', 1, 0, 0, 1, 1),
+           (4, N'audit', 1, 0, 0, 1, 1);
 SET IDENTITY_INSERT [dbo].[Screens] OFF;
 
 SET IDENTITY_INSERT [dbo].[CommonAddresses] ON;
@@ -23,11 +23,12 @@ SET IDENTITY_INSERT [dbo].[Organizations] OFF;
 
 SET IDENTITY_INSERT [dbo].[Users] ON;
     INSERT [dbo].[Users] ([Id], [UserName], [IsSuperUser], [IsLocked], [IsActive], [CreatedAt], [UpdatedAt], [Email]) 
-    VALUES (1, N'admin', 1, 1, 0, 0, 0, N'globe@mailinator.com');
+    VALUES (1, N'admin', 1, 0, 1, 0, 0, N'globe@mailinator.com');
 SET IDENTITY_INSERT [dbo].[Users] OFF;
 
 
-INSERT [dbo].[AspNetUsers] ([Id], [UserId], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
+INSERT [dbo].[AspNetUsers] ([Id], [UserId], [UserName], [NormalizedUserName], [Email], [NormalizedEmail], [EmailConfirmed], [PasswordHash], [SecurityStamp], [ConcurrencyStamp],
+                            [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEnd], [LockoutEnabled], [AccessFailedCount]) 
 VALUES (N'738bca4c-78c8-4d90-9308-cacff9b48490', 1, N'admin', N'ADMIN', N'globe@mailinator.com', N'GLOBE@MAILINATOR.COM', 1, 
         N'AQAAAAEAACcQAAAAENhD7/MWLbVJp2jKyCd/4nz9xJAq0V0w4L5zRVN4KIOt8N9F+fa6UqbGL/gu+7Dvow==', N'Z4NCVHASAKZ3YQX2C4TADF2TCX6DV4BI', 
         N'5d4a900f-680b-49e0-bf41-b26a674c649c', NULL, 0, 0, NULL, 1, 0);

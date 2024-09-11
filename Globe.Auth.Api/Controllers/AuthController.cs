@@ -9,14 +9,12 @@ namespace Globe.Account.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class AuthController : BaseController
+    public class AuthController : BaseController<AuthController>
     {
         private readonly IAuthService _authService;
-        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger) : base(logger)
         {
-            _logger = logger;
             _authService = authService;
         }
 
